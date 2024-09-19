@@ -5,10 +5,7 @@ export const useValidators = () => {
 
   // Validate strings (e.g. first name, last name, etc.)
   const validateString = (name, value) => {
-    if (!value.trim()) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "This field is required." }));
-      return false;
-    } else if (!/^[a-zA-Z\s]*$/.test(value)) {
+    if (!/^[a-zA-Z\s]*$/.test(value)) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "Only letters and spaces are allowed." }));
       return false;
     } else {
@@ -19,10 +16,7 @@ export const useValidators = () => {
 
   // Validate integers (e.g. obtained marks, total marks, etc.)
   const validateInteger = (name, value) => {
-    if (!value.trim()) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "This field is required." }));
-      return false;
-    } else if (!/^\d+$/.test(value)) {
+    if (!/^\d+$/.test(value)) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "Please enter a valid number." }));
       return false;
     } else {
@@ -65,10 +59,7 @@ const validatePhoneNumber = (name, value) => {
 
   // Validate email format
   const validateEmail = (name, value) => {
-    if (!value.trim()) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "This field is required." }));
-      return false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "Invalid email format." }));
       return false;
     } else {
@@ -79,10 +70,7 @@ const validatePhoneNumber = (name, value) => {
 
   // Validate address (alphanumeric)
   const validateAddress = (name, value) => {
-    if (!value.trim()) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "This field is required." }));
-      return false;
-    } else if (!/^[a-zA-Z0-9\s,]*$/.test(value)) {
+    if (!/^[a-zA-Z0-9\s,]*$/.test(value)) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "Invalid characters in address." }));
       return false;
     } else {
