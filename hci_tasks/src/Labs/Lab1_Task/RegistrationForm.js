@@ -19,8 +19,53 @@ function RegistrationForm() {
     program: "",
   });
 
-  const { errors, validateString, validateInteger, validateCNIC, validatePhoneNumber, validateEmail, validateAddress } =
-    useValidators();
+  const [formDataTime, setFormDataTime] = useState({
+    firstName: 0,
+    lastName: 0,
+    fatherName: 0,
+    contactNumber: 0,
+    cnic: 0,
+    email: 0,
+    address: 0,
+    city: 0,
+    fscObtainedMarks: 0,
+    fscTotalMarks: 0,
+    ntsObtainedMarks: 0,
+    ntsTotalMarks: 0,
+    program: 0,
+  });
+
+  const [startTime, setStartTime] = useState(null);
+  const [currentField, setCurrentField] = useState(null);
+
+  const {
+    errors,
+    validateString,
+    validateInteger,
+    validateCNIC,
+    validatePhoneNumber,
+    validateEmail,
+    validateAddress,
+  } = useValidators();
+
+  // Start tracking time for the field
+  const handleFocus = (name) => {
+    setStartTime(Date.now());
+    setCurrentField(name);
+  };
+
+  const handleBlur = (name) => {
+    if (startTime) {
+      const endTime = Date.now();
+      const timeSpent = (endTime - startTime) / 1000; // Time in seconds
+      setFormDataTime((prev) => ({
+        ...prev,
+        [name]: prev[name] + timeSpent,
+      }));
+      setStartTime(null);
+      setCurrentField(null);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,6 +115,12 @@ function RegistrationForm() {
     }
   };
 
+  const calculateTotalTime = () => {
+    return Object.values(formDataTime)
+      .reduce((total, fieldTime) => total + fieldTime, 0)
+      .toFixed(2);
+  };
+
   // Function to format phone number as 0300-0000000 and limit to 11 digits
   const formatPhoneNumber = (value) => {
     const cleaned = value.replace(/\D/g, "");
@@ -99,8 +150,24 @@ function RegistrationForm() {
   // Prevent numbers in string fields
   const handleStringKeyDown = (e) => {
     const key = e.key;
-    if (!/^[a-zA-Z\s]+$/.test(key) && key !== "Backspace" && key !== "Tab") {
-      e.preventDefault();
+
+    // Allow Backspace, Tab, and other control keys
+    if (key === "Backspace" || key === "Tab") {
+      return;
+    }
+
+    // Get the current input value
+    const inputValue = e.target.value;
+
+    // First character must be a letter (a-zA-Z)
+    if (inputValue.length === 0 && !/^[a-zA-Z]$/.test(key)) {
+      e.preventDefault(); // Prevent non-letter keys as the first character
+      return;
+    }
+
+    // For subsequent characters, allow letters, spaces, and numbers
+    if (!/^[a-zA-Z0-9\s]$/.test(key)) {
+      e.preventDefault(); // Prevent non-alphanumeric characters except spaces
     }
   };
 
@@ -124,7 +191,10 @@ function RegistrationForm() {
       console.log("Form contains errors. Fix them before submitting.");
       return;
     }
-    console.log("Form Submitted", formData);
+
+    const totalTime = calculateTotalTime();
+    console.log(`Form Submitted in ${totalTime} seconds`, formData);
+    console.log("Time spent on each field:", formDataTime);
   };
 
   return (
@@ -147,6 +217,8 @@ function RegistrationForm() {
                   value={formData.firstName}
                   onChange={handleChange}
                   onKeyDown={handleStringKeyDown}
+                  onFocus={() => handleFocus("firstName")}
+                  onBlur={() => handleBlur("firstName")}
                   required
                   placeholder=" "
                 />
@@ -163,6 +235,8 @@ function RegistrationForm() {
                   value={formData.lastName}
                   onChange={handleChange}
                   onKeyDown={handleStringKeyDown}
+                  onFocus={() => handleFocus("lastName")}
+                  onBlur={() => handleBlur("lastName")}
                   required
                   placeholder=" "
                 />
@@ -180,6 +254,8 @@ function RegistrationForm() {
                 value={formData.fatherName}
                 onChange={handleChange}
                 onKeyDown={handleStringKeyDown}
+                onFocus={() => handleFocus("fatherName")}
+                onBlur={() => handleBlur("fatherName")}
                 required
                 placeholder=" "
               />
@@ -196,6 +272,8 @@ function RegistrationForm() {
                 value={formData.contactNumber}
                 onChange={handleChange}
                 onKeyDown={handleIntegerKeyDown}
+                onFocus={() => handleFocus("contactNumber")}
+                onBlur={() => handleBlur("contactNumber")}
                 required
                 placeholder=" "
               />
@@ -212,6 +290,8 @@ function RegistrationForm() {
                 value={formData.cnic}
                 onChange={handleChange}
                 onKeyDown={handleIntegerKeyDown}
+                onFocus={() => handleFocus("cnic")}
+                onBlur={() => handleBlur("cnic")}
                 required
                 placeholder=" "
               />
@@ -227,6 +307,8 @@ function RegistrationForm() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onFocus={() => handleFocus("email")}
+                onBlur={() => handleBlur("email")}
                 required
                 placeholder=" "
               />
@@ -242,6 +324,8 @@ function RegistrationForm() {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
+                onFocus={() => handleFocus("address")}
+                onBlur={() => handleBlur("address")}
                 required
                 placeholder=" "
               />
@@ -258,6 +342,8 @@ function RegistrationForm() {
                 value={formData.city}
                 onChange={handleChange}
                 onKeyDown={handleStringKeyDown}
+                onFocus={() => handleFocus("city")}
+                onBlur={() => handleBlur("city")}
                 required
                 placeholder=" "
               />
@@ -279,6 +365,8 @@ function RegistrationForm() {
                   value={formData.fscObtainedMarks}
                   onChange={handleChange}
                   onKeyDown={handleIntegerKeyDown}
+                  onFocus={() => handleFocus("fscObtainedMarks")}
+                  onBlur={() => handleBlur("fscObtainedMarks")}
                   required
                   placeholder=" "
                 />
@@ -293,6 +381,8 @@ function RegistrationForm() {
                   value={formData.fscTotalMarks}
                   onChange={handleChange}
                   onKeyDown={handleIntegerKeyDown}
+                  onFocus={() => handleFocus("fscTotalMarks")}
+                  onBlur={() => handleBlur("fscTotalMarks")}
                   required
                   placeholder=" "
                 />
@@ -311,6 +401,8 @@ function RegistrationForm() {
                   value={formData.ntsObtainedMarks}
                   onChange={handleChange}
                   onKeyDown={handleIntegerKeyDown}
+                  onFocus={() => handleFocus("ntsObtainedMarks")}
+                  onBlur={() => handleBlur("ntsObtainedMarks")}
                   required
                   placeholder=" "
                 />
@@ -325,6 +417,8 @@ function RegistrationForm() {
                   value={formData.ntsTotalMarks}
                   onChange={handleChange}
                   onKeyDown={handleIntegerKeyDown}
+                  onFocus={() => handleFocus("ntsTotalMarks")}
+                  onBlur={() => handleBlur("ntsTotalMarks")}
                   required
                   placeholder=" "
                 />
@@ -335,8 +429,15 @@ function RegistrationForm() {
           </div>
         </div>
         <div className="form-button">
-          <button type="submit" className="reg-button" disabled={hasErrors()}
-          style={{ opacity: hasErrors() ? 0.5 : 1, pointerEvents: hasErrors() ? 'none' : 'auto'}}>
+          <button
+            type="submit"
+            className="reg-button"
+            disabled={hasErrors()}
+            style={{
+              opacity: hasErrors() ? 0.5 : 1,
+              pointerEvents: hasErrors() ? "none" : "auto",
+            }}
+          >
             <span>Submit</span>
           </button>
         </div>

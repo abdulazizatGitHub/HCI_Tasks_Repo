@@ -3,10 +3,14 @@ import { useState } from "react";
 export const useValidators = () => {
   const [errors, setErrors] = useState({});
 
-  // Validate strings (e.g. first name, last name, etc.)
+  // Validate string fields (only alphabets and spaces allowed)
   const validateString = (name, value) => {
-    if (!/^[a-zA-Z\s]*$/.test(value)) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "Only letters and spaces are allowed." }));
+    const regex = /^[a-zA-Z\s]+$/;
+    if (!regex.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "Numbers are not allowed before character.",
+      }));
       return false;
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -14,10 +18,14 @@ export const useValidators = () => {
     }
   };
 
-  // Validate integers (e.g. obtained marks, total marks, etc.)
+  // Validate integer fields (only numbers allowed)
   const validateInteger = (name, value) => {
-    if (!/^\d+$/.test(value)) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "Please enter a valid number." }));
+    const regex = /^\d+$/;
+    if (!regex.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "Only numbers are allowed.",
+      }));
       return false;
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -25,42 +33,44 @@ export const useValidators = () => {
     }
   };
 
-// Validate phone number format (must be in the format 0300-0000000 and 11 digits)
-const validatePhoneNumber = (name, value) => {
-    const cleaned = value.replace(/\D/g, ""); // Remove formatting for validation
-  
-    if (cleaned.length !== 11) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "Phone number must be exactly 11 digits." }));
-      return false;
-    } else if (!/^\d{4}-\d{7}$/.test(value)) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "Phone number must be in the format 0300-0000000." }));
+  // Validate CNIC format (XXXXX-XXXXXXX-X)
+  const validateCNIC = (name, value) => {
+    const regex = /^\d{5}-\d{7}-\d{1}$/;
+    if (!regex.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "Please enter a valid CNIC (XXXXX-XXXXXXX-X).",
+      }));
       return false;
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
       return true;
     }
   };
-  
-  // Validate CNIC format (must be in the format 00000-0000000-0 and 13 digits)
-  const validateCNIC = (name, value) => {
-    const cleaned = value.replace(/\D/g, ""); // Remove formatting for validation
-  
-    if (cleaned.length !== 13) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "CNIC must be exactly 13 digits." }));
-      return false;
-    } else if (!/^\d{5}-\d{7}-\d{1}$/.test(value)) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "CNIC must be in the format 00000-0000000-0." }));
+
+  // Validate phone number format (XXXX-XXXXXXX)
+  const validatePhoneNumber = (name, value) => {
+    const regex = /^\d{4}-\d{7}$/;
+    if (!regex.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "Please enter a valid phone number (XXXX-XXXXXXX).",
+      }));
       return false;
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
       return true;
     }
-  };  
+  };
 
   // Validate email format
   const validateEmail = (name, value) => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "Invalid email format." }));
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "Please enter a valid email address.",
+      }));
       return false;
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -68,24 +78,18 @@ const validatePhoneNumber = (name, value) => {
     }
   };
 
-  // Validate address (alphanumeric)
+  // Validate address (minimum length check)
   const validateAddress = (name, value) => {
-    if (!/^[a-zA-Z0-9\s,]*$/.test(value)) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "Invalid characters in address." }));
+    if (value.length < 5) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "Address must be at least 5 characters long.",
+      }));
       return false;
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
       return true;
     }
-  };
-
-  // Clear validation errors for specific fields
-  const clearErrors = (field) => {
-    setErrors((prevErrors) => {
-      const newErrors = { ...prevErrors };
-      delete newErrors[field]; // Remove specific error
-      return newErrors;
-    });
   };
 
   return {
@@ -96,6 +100,5 @@ const validatePhoneNumber = (name, value) => {
     validatePhoneNumber,
     validateEmail,
     validateAddress,
-    clearErrors,
   };
 };
